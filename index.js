@@ -2,11 +2,14 @@ import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-
+import cors from 'cors';
 import router from './routes/userRoute.js';
+import { expressjwt } from 'express-jwt';
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
+
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 const MONGO_URL = process.env.MONGO_URL;
@@ -26,3 +29,13 @@ mongoose.connect(MONGO_URL).then(
 });
 
 app.use('/api/user', router);
+
+let jwtMW = expressjwt({
+    secret: 'testapp-cloud-secret',
+    algorithms: [ 'HS256' ]
+  });/*.unless({ 
+    path: [ 
+      { url: '/', methods: [ 'GET' ] },
+    ]
+  });*/
+  app.use(jwtMW);
